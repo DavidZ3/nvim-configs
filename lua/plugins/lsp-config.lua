@@ -32,7 +32,7 @@ return {
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
       local mlsp = require("mason-lspconfig")
 
-      -- Configure each server exactly once (prevents duplicate clients)
+      -- Configure each server exactly once via Mason
       local function setup_server(server)
         local opts = { capabilities = capabilities }
 
@@ -45,6 +45,8 @@ return {
           }
 
         elseif server == "pyright" then
+          -- Force Mason binary to avoid PATH/global duplicates
+          opts.cmd = { vim.fn.stdpath("data") .. "/mason/bin/pyright-langserver.cmd", "--stdio" }
           opts.root_dir = util.root_pattern(
             "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", ".git"
           )
@@ -71,10 +73,38 @@ return {
         lspconfig[server].setup(opts)
       end
 
-      -- Set up only the servers Mason knows about
-      for _, server in ipairs(mlsp.get_installed_servers()) do
-        setup_server(server)
+      -- Guard against double-config on reloads
+      if not vim.g.__my_lsp_servers_configured then
+        for _, server in ipairs(mlsp.get_installed_servers()) do
+          setup_server(server)
+        end
+        vim.g.__my_lsp_servers_configured = true
       end
+
+      -- Hard stop duplicate Pyright clients (keep Mason one)
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          local new_client = vim.lsp.get_client_by_id(args.data.client_id)
+          if not new_client or new_client.name ~= "pyright" then return end
+
+          local function is_mason_client(c)
+            local exe = (c.cmd and c.cmd[1] or ""):gsub("\\", "/"):lower()
+            return exe:find("/mason/bin/pyright%-langserver") ~= nil
+          end
+
+          local py_clients = vim.lsp.get_active_clients({ bufnr = args.buf, name = "pyright" })
+          -- Prefer the Mason-managed client if present
+          local keep = new_client
+          for _, c in ipairs(py_clients) do
+            if is_mason_client(c) then keep = c break end
+          end
+          for _, c in ipairs(py_clients) do
+            if c.id ~= keep.id then
+              vim.lsp.stop_client(c.id)
+            end
+          end
+        end,
+      })
 
       -- Keymaps
       vim.keymap.set('n', 'K',  vim.lsp.buf.hover, {})
