@@ -17,6 +17,16 @@ return {
         end,
     },
     {
+        "ray-x/lsp_signature.nvim",
+        event = "InsertEnter",
+        opts = {
+            bind = true,
+            handler_opts = {
+                border = "rounded"
+            }
+        },
+    },
+    {
         "neovim/nvim-lspconfig",
         lazy = false,
         dependencies = { "hrsh7th/cmp-nvim-lsp" },
@@ -49,10 +59,6 @@ return {
                 capabilities = vim.tbl_deep_extend("force", capabilities, { offsetEncoding = { "utf-16" } }),
                 cmd = {
                     "clangd",
-                    "--background-index",
-                    "--clang-tidy",
-                    "--completion-style=detailed",
-                    "--offset-encoding=utf-16",
                     "--fallback-style=webkit",
                     "--compile-commands-dir=.",
                 },
@@ -63,8 +69,13 @@ return {
             vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, {})
             vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {})
             vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {})
+            vim.keymap.set('n', 'gr', vim.lsp.buf.references, { desc = 'Find references' })
             vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, {})
             vim.keymap.set('n', '<leader>e', function() vim.diagnostic.open_float() end, {})
+            vim.keymap.set("n", "<leader>ds", "<cmd>Telescope lsp_document_symbols<CR>", { desc = "Document symbols" })
+            vim.keymap.set("n", "<leader>ws", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>",
+                { desc = "Workspace symbols" })
+
 
             vim.diagnostic.config({ virtual_text = true })
             vim.keymap.set('n', '<space>E', function()
