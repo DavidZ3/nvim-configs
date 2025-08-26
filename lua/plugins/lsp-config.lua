@@ -53,7 +53,7 @@ return {
                     "--clang-tidy",
                     "--completion-style=detailed",
                     "--offset-encoding=utf-16",
-                    '--fallback-style={BasedOnStyle: LLVM, IndentWidth: 4, TabWidth: 4, UseTab: Never, ContinuationIndentWidth: 4}',
+                    "--fallback-style=webkit",
                     "--compile-commands-dir=.",
                 },
             })
