@@ -21,15 +21,14 @@ return {
                         "--extend-ignore=W503,E501,E226,E402,E731,E712,E701",
                     },
                 }),
-
-                -- C / C++ formatter
-                null_ls.builtins.formatting.clang_format.with({
-                    filetypes = { "c", "cpp", "objc", "objcpp" },
-                    extra_args = {
-                        "--style=file",            -- use .clang-format if present
-                        "--fallback-style=LLVM",   -- fallback when no .clang-format found
-                    }
-                }),
+            --     -- C / C++ formatter
+            --     null_ls.builtins.formatting.clang_format.with({
+            --         filetypes = { "c", "cpp", "objc", "objcpp" },
+            --         extra_args = {
+            --             "--style=file",            -- use .clang-format if present
+            --             "--fallback-style=LLVM",   -- fallback when no .clang-format found
+            --         }
+            --     }),
             }
         })
         vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
