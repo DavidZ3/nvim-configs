@@ -11,7 +11,7 @@ return {
         "williamboman/mason-lspconfig.nvim",
         config = function()
             require("mason-lspconfig").setup({
-                ensure_installed = { "lua_ls", "pyright", "clangd" }, -- install only
+                ensure_installed = { "lua_ls", "pyright", "clangd", "biome" }, -- install only
                 automatic_installation = true,
             })
         end,
@@ -31,12 +31,15 @@ return {
         lazy = false,
         dependencies = { "hrsh7th/cmp-nvim-lsp" },
         config = function()
-            local lspconfig = require("lspconfig")
-            local util = require("lspconfig.util")
+            -- Capabilities (for nvim-cmp, etc.)
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-            -- Lua
-            lspconfig.lua_ls.setup({
+            ---------------------------------------------------------------------------
+            -- Configure servers (override defaults), then enable them
+            ---------------------------------------------------------------------------
+
+            -- Lua (lua_ls)
+            vim.lsp.config("lua_ls", {
                 capabilities = capabilities,
                 settings = {
                     Lua = {
@@ -45,17 +48,34 @@ return {
                     },
                 },
             })
+            vim.lsp.enable("lua_ls")
 
-            -- Python (Mason's pyright will be used via PATH=prepend; no need to set cmd)
-            lspconfig.pyright.setup({
+            -- Python (pyright)
+            vim.lsp.config("pyright", {
                 capabilities = capabilities,
-                root_dir = util.root_pattern("pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", ".git"),
                 single_file_support = false,
-                settings = { python = { analysis = { typeCheckingMode = "basic" } } },
-            })
+                settings = {
+                    python = {
+                        analysis = {
+                            venv = "env_f8d443c5aed58962629460105d4ac0ac",
+                            venvPath = "C:/Users/dzhou/python_environments/",
+                            pythonVersion = "3.6.2",
+                            pythonPlatform = "Windows",
 
-            -- C/C++
-            lspconfig.clangd.setup({
+                            extraPaths = {
+                                ".",
+                                "Tools/cochlear_system5_sp16",
+                                "Tools/cochlear_system5_sp16/Toolbox",
+                                "Tools/cochlear_system5_sp16/Scripts/",
+                            },
+                        },
+                    },
+                },
+            })
+            vim.lsp.enable("pyright")
+
+            -- C/C++ (clangd)
+            vim.lsp.config("clangd", {
                 capabilities = vim.tbl_deep_extend("force", capabilities, { offsetEncoding = { "utf-16" } }),
                 cmd = {
                     "clangd",
@@ -63,8 +83,11 @@ return {
                     "--compile-commands-dir=.",
                 },
             })
+            vim.lsp.enable("clangd")
 
+            ---------------------------------------------------------------------------
             -- Keymaps & diagnostics
+            ---------------------------------------------------------------------------
             vim.keymap.set('n', 'K', vim.lsp.buf.hover, {})
             vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, {})
             vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {})
@@ -76,7 +99,6 @@ return {
             vim.keymap.set("n", "<leader>ws", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>",
                 { desc = "Workspace symbols" })
 
-
             vim.diagnostic.config({ virtual_text = true })
             vim.keymap.set('n', '<space>E', function()
                 local cfg = vim.diagnostic.config()
@@ -85,5 +107,6 @@ return {
                 vim.notify('Inline diagnostics: ' .. ((not on) and 'ON' or 'OFF'))
             end, { desc = 'Toggle inline diagnostics' })
         end,
-    },
+    }
+    ,
 }
