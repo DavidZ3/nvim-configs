@@ -13,6 +13,8 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.softtabstop = 4
 vim.opt.tabstop = 4
+vim.opt.list = true
+vim.opt.listchars = "tab:> ,trail:-,nbsp:+"
 
 -- Folding with Treesitter
 vim.opt.foldmethod = "expr"

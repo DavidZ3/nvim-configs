@@ -94,12 +94,12 @@ return {
             vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {})
             vim.keymap.set('n', 'gr', vim.lsp.buf.references, { desc = 'Find references' })
             vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, {})
-            vim.keymap.set('n', '<leader>e', function() vim.diagnostic.open_float() end, {})
-            vim.keymap.set("n", "<leader>ds", "<cmd>Telescope lsp_document_symbols<CR>", { desc = "Document symbols" })
-            vim.keymap.set("n", "<leader>ws", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>",
-                { desc = "Workspace symbols" })
+            -- vim.keymap.set('n', '<leader>e', function() vim.diagnostic.open_float() end, {})
+            -- vim.keymap.set("n", "<leader>ds", "<cmd>Telescope lsp_document_symbols<CR>", { desc = "Document symbols" })
+            -- vim.keymap.set("n", "<leader>ws", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>",
+            --     { desc = "Workspace symbols" })
 
-            vim.diagnostic.config({ virtual_text = true })
+            vim.diagnostic.config({ virtual_text = false })
             vim.keymap.set('n', '<space>E', function()
                 local cfg = vim.diagnostic.config()
                 local on = (cfg.virtual_text == true) or (type(cfg.virtual_text) == 'table')
