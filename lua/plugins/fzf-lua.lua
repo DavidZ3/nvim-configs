@@ -8,7 +8,7 @@ return {
             local fzf = require("fzf-lua")
             local has_delta = vim.fn.executable("delta") == 1
             return {
-                fzf_opts = { ["--prompt"] = " " },
+                fzf_opts = { ["--prompt"] = "> " },
                 winopts = {
                     fullscreen = false,
                     -- preview = {
@@ -35,14 +35,16 @@ return {
                 },
                 actions = {
                     files = {
+                        ["default"] = fzf.actions.file_edit,
                         ["ctrl-q"] = fzf.actions.file_sel_to_qf,
                     },
                     grep = {
+                        ["default"] = fzf.actions.file_edit,
                         ["ctrl-q"] = fzf.actions.file_sel_to_qf,
                     },
                 },
                 files = {
-                    prompt     = " ",
+                    prompt     = "🚀 ",
                     cwd_prompt = false,
                     file_icons = true,
                     git_icons  = true,
@@ -50,7 +52,7 @@ return {
                     fd_opts    = [[--hidden --follow --exclude .git]],
                 },
                 grep = {
-                    prompt  = " ",
+                    prompt  = "🚀 ",
                     rg_opts = [[--no-heading --color=always --smart-case --hidden --follow --glob !.git/]],
                     silent  = true,
                 },
