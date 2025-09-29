@@ -62,7 +62,17 @@ return {
                     ["<C-f>"] = cmp.mapping.scroll_docs(4),
                     ["<C-Space>"] = cmp.mapping.complete(),
                     ["<C-e>"] = cmp.mapping.abort(),
-                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                    -- Confirm only if something is selected; otherwise do normal <CR>
+                    ["<CR>"] = cmp.mapping(function(fallback)
+                        if cmp.visible() and cmp.get_selected_entry() then
+                            cmp.confirm({
+                                behavior = cmp.ConfirmBehavior.Replace,
+                                select = false, -- don't auto-select
+                            })
+                        else
+                            fallback()
+                        end
+                    end, { "i", "s" }),
                 }),
                 sources = cmp.config.sources({
                     { name = "nvim_lsp" },
